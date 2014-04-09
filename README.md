@@ -8,7 +8,7 @@ Implementação do mode de cifra CBC sobre a cifra por blocos (AES-128), juntame
 
 Representation
 ----------
-![Alt text](/image/CMAC.jpg)
+![Alt text](image/CMAC.png)
 
 Run
 --------------
