@@ -16,7 +16,7 @@ return i;
 	
 }
 
-void aes_cbc_encript(unsigned char *data, int len, unsigned char *key, unsigned char iv[],unsigned char *k1,unsigned char *k2, unsigned char *mac)
+void aes_cbc_encript(unsigned char *data, int len, unsigned char *key, unsigned char *iv,unsigned char *k1,unsigned char *k2, unsigned char *mac)
 {
 	unsigned char state[16];
 	
@@ -142,13 +142,15 @@ void aes_cbc_encript(unsigned char *data, int len, unsigned char *key, unsigned 
 
 
 
-void aes_cbc_decript(unsigned char *data, int len, unsigned char *key,unsigned char iv[],unsigned char *k1)
+void aes_cbc_decript(unsigned char *data, int len, unsigned char *key,unsigned char *iv,unsigned char *k1)
 {
 	unsigned char state[16];
 
 	unsigned char key1[16];
 	
 	unsigned char next_xor[16];
+	
+	unsigned char ivAux[16];
 	
 	int i = 0,e;
 	
@@ -164,10 +166,12 @@ void aes_cbc_decript(unsigned char *data, int len, unsigned char *key,unsigned c
 	int nRounds= len/16;
 	//printf("%d \n",nRounds);
 	
+
+	memcpy(ivAux,iv,16);
 	
 	//Encrip de nonce using a key k1
 	memcpy(key1,k1, 16);
-	aes_enc_dec(iv,key1,0);
+	aes_enc_dec(ivAux,key1,0);
 	
 	for(; i < nRounds;i++){
 			
@@ -192,16 +196,16 @@ void aes_cbc_decript(unsigned char *data, int len, unsigned char *key,unsigned c
 		}
 	*/
 	
-	// Se for a primeira rounda XOR com IV, caso contrario  faz com next_xor
+	// Se for a primeira rounda XOR com ivAux, caso contrario  faz com next_xor
 	
 	if(i==0){
 	//	printf("\n primeira ronda \n");
-		//XOR IV + PlainText
+		//XOR ivAux + PlainText
 		for (e=0;e<16;e++){
-			state[e]= state[e] ^ iv[e];
+			state[e]= state[e] ^ ivAux[e];
 			}			
 		}else{
-			//XOR IV + PlainText
+			//XOR nextXor + PlainText
 			for (e=0;e<16;e++){
 				state[e]= state[e] ^ next_xor[e];
 				}

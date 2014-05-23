@@ -82,7 +82,7 @@ int main(int argc, const char *argv[])
 	
 	//printf("\n sizeof %d\n",len);
 	
-	aes_cbc_decript(newdata,lenNew,key,iv2,k1);
+	aes_cbc_decript(newdata,lenNew,key,iv,k1);
 	
 /*	printf("\n DATA \n");
 	for(e = 0; e < lenNew; e++){
@@ -92,7 +92,7 @@ int main(int argc, const char *argv[])
 	
 	memcpy(newdata1,newdata,len);
 	
-	aes_cbc_encript(newdata1,len,key,iv3,k1,k2,mac_rev);
+	aes_cbc_encript(newdata1,len,key,iv,k1,k2,mac_rev);
 /*	
 	printf("print MAC \n"); 
 	for(e = 0; e <16 ; e++){
