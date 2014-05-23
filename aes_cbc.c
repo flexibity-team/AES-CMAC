@@ -1,8 +1,5 @@
 #include "TI_aes_128.h"
 
-#include <sys/types.h>
-#include <inttypes.h>
-
 /*função que verifica se bloco contem padding ou não 
  * ret 0 caso negativo ou o valor de bytes com pading*/
 int existPadding(unsigned char *block){
@@ -58,7 +55,6 @@ void aes_cbc_encript(unsigned char *data, int len, unsigned char *key, unsigned 
 	
 	//In last round compute the MAC
 	if(i == (nRounds-1) && (!lastRound)){
-		printf("Last round wihtout padding \n");
 	
 	memcpy(lastState, &data[i*16], 16);	
 
@@ -70,7 +66,6 @@ void aes_cbc_encript(unsigned char *data, int len, unsigned char *key, unsigned 
 	printf(" \n");
 */	
 		if(existPadding(state)!=0){
-			printf("padding detected without paddig \n");	
 			lastRound=1;
 			break;
 			}
@@ -101,11 +96,8 @@ void aes_cbc_encript(unsigned char *data, int len, unsigned char *key, unsigned 
 	
 	if(lastRound){
 	
-	printf("\n LAST Round \n");	
 	
 	if(finalLen != 0){
-		
-	printf("lets add padding \n");
 		
 	//ADD Padding 
 	memcpy(state, &data[(i*16)],finalLen);
@@ -162,7 +154,7 @@ void aes_cbc_decript(unsigned char *data, int len, unsigned char *key,unsigned c
 	
 	int lastRound = 0;
 	
-	uint8_t finallen;
+	int finallen;
 
 	if (len % 16 != 0) {
 	printf("\n Error: menssagem mal formatada (numero de blocos não inteiro) \n");
