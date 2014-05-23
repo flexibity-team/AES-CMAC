@@ -31,7 +31,7 @@ void aes_cbc_encript(unsigned char *data, int len, unsigned char *key, unsigned 
 	
 	int lastRound = 0;
 	
-	uint8_t finalLen = 0;
+	int finalLen = 0;
 	if (len % 16 != 0) {
 	lastRound =1;
 	finalLen = len % 16;
@@ -60,7 +60,7 @@ void aes_cbc_encript(unsigned char *data, int len, unsigned char *key, unsigned 
 	if(i == (nRounds-1) && (!lastRound)){
 		printf("Last round wihtout padding \n");
 	
-	memcpy(state, &data[i*16], 16);	
+	memcpy(lastState, &data[i*16], 16);	
 
 /*			
 	printf("\n Last State \n");
@@ -109,7 +109,7 @@ void aes_cbc_encript(unsigned char *data, int len, unsigned char *key, unsigned 
 		
 	//ADD Padding 
 	memcpy(state, &data[(i*16)],finalLen);
-	memset(&state[finalLen],finalLen,16-finalLen);
+	memset(&state[finalLen],(16-finalLen),16-finalLen);
 	}
 	
 	// XOR LastState + PlainText.
@@ -163,7 +163,7 @@ void aes_cbc_decript(unsigned char *data, int len, unsigned char *key,unsigned c
 	
 	int lastRound = 0;
 	
-	int finallen;
+	uint8_t finallen;
 
 	if (len % 16 != 0) {
 	printf("\n Error: menssagem mal formatada (numero de blocos não inteiro) \n");

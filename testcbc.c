@@ -13,7 +13,7 @@ int main(int argc, const char *argv[])
     0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 
     0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
     
-    0x00};
+    0x00, 0x11};
 	
 	uint8_t key[] = 
 	{ 
@@ -100,11 +100,11 @@ int main(int argc, const char *argv[])
 		}
 */
 
-/*	printf("\n DATA \n");
+	printf("\n DATA \n");
 	for(e = 0; e < lenNew; e++){
 		printf("%02x, ",newdata[e] & 0xff);
 		}
-*/	
+	
 	if(memcmp(data,newdata,len)==0){
 		printf("\n Equals \n");
 		}
