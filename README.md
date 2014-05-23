@@ -37,12 +37,4 @@ make
 ```
 
 
-
-
-License
-----
-
-MIT
-
-
     
