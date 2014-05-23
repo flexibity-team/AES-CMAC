@@ -35,15 +35,6 @@ int main(int argc, const char *argv[])
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-	uint8_t iv2[]=
-	{
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-
-	uint8_t iv3[]=
-	{
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
 	unsigned char mac[16];
 	unsigned char mac_rev[16];
@@ -68,6 +59,7 @@ int main(int argc, const char *argv[])
 	
 	memcpy(newdata,data,len);
 	aes_cbc_encript(newdata,len,key,iv,k1,k2,mac);
+	
 /*	
 	printf("print MAC \n"); 
 	for(e = 0; e <16 ; e++){
@@ -75,13 +67,14 @@ int main(int argc, const char *argv[])
 		}
 */
 	int lenNew = sizeof(newdata);
-	printf("\n Criptograma \n");
+	printf("\n Cripto \n");
 	for(e = 0; e < lenNew ; e++){
 		printf("%02x, ",newdata[e] & 0xff);
 		}
 	
-	//printf("\n sizeof %d\n",len);
-	
+	/* Send newdata to receiver*/
+
+	/* receiver decypher msg */	
 	aes_cbc_decript(newdata,lenNew,key,iv,k1);
 	
 /*	printf("\n DATA \n");
@@ -90,9 +83,16 @@ int main(int argc, const char *argv[])
 		}
 */
 	
+	/* receiver compute MAC of msg to be compare */
 	memcpy(newdata1,newdata,len);
-	
 	aes_cbc_encript(newdata1,len,key,iv,k1,k2,mac_rev);
+	
+	/* Compare MAC's to validate msg*/
+	
+	if(memcmp(mac,mac_rev,16)==0){
+		printf(" MAC Equals \n");
+		}
+	
 /*	
 	printf("print MAC \n"); 
 	for(e = 0; e <16 ; e++){
@@ -109,8 +109,6 @@ int main(int argc, const char *argv[])
 		printf("\n Equals \n");
 		}
 	
-	if(memcmp(mac,mac_rev,16)==0){
-		printf(" MAC Equals \n");
-		}
+	
 return 0;
 }

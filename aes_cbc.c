@@ -154,19 +154,15 @@ void aes_cbc_decript(unsigned char *data, int len, unsigned char *key,unsigned c
 	
 	int i = 0,e;
 	
-	int lastRound = 0;
-	
-	int finallen;
-
+	//TODO reject msg outside
+	 
 	if (len % 16 != 0) {
 	printf("\n Error: menssagem mal formatada (numero de blocos não inteiro) \n");
-//	lastRound=1;
-//	finallen = len % 16;
 	}
+	
 	int nRounds= len/16;
 	//printf("%d \n",nRounds);
 	
-
 	memcpy(ivAux,iv,16);
 	
 	//Encrip de nonce using a key k1
