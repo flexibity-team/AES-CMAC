@@ -150,10 +150,9 @@ void aes_cbc_encript(unsigned char *data, int len, unsigned char *key, unsigned 
 
 
 
-void aes_cbc_decript(unsigned char *data, int len, unsigned char *key,unsigned char iv[],unsigned char *k1,unsigned char *k2,unsigned char *mac)
+void aes_cbc_decript(unsigned char *data, int len, unsigned char *key,unsigned char iv[],unsigned char *k1)
 {
 	unsigned char state[16];
-
 
 	unsigned char key1[16];
 	
@@ -185,6 +184,7 @@ void aes_cbc_decript(unsigned char *data, int len, unsigned char *key,unsigned c
 	memcpy(key1,key, 16);
 	aes_enc_dec(state,key1,1);
 	
+	/*
 		if(i == (nRounds-1)){
 		
 		memcpy(mac,state, 16);
@@ -198,6 +198,7 @@ void aes_cbc_decript(unsigned char *data, int len, unsigned char *key,unsigned c
 		aes_enc_dec(mac,key1,0);
 		
 		}
+	*/
 	
 	// Se for a primeira rounda XOR com IV, caso contrario  faz com next_xor
 	

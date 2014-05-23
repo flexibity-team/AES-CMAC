@@ -82,7 +82,7 @@ int main(int argc, const char *argv[])
 	
 	//printf("\n sizeof %d\n",len);
 	
-	aes_cbc_decript(newdata,lenNew,key,iv2,k1,k2,mac_rev);
+	aes_cbc_decript(newdata,lenNew,key,iv2,k1);
 	
 /*	printf("\n DATA \n");
 	for(e = 0; e < lenNew; e++){
