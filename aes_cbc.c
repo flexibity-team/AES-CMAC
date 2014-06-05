@@ -1,13 +1,14 @@
 #include "TI_aes_128.h"
+#include "aes_cbc.h"
 
 /*função que verifica se bloco contem padding ou não 
  * ret 0 caso negativo ou o valor de bytes com pading*/
 int existPadding(unsigned char *block){
 
-int i = block[15];	
+int i = block[B_LAST_INDEX];	
 int a;	
 
-		for(a = 15; a > (15-i) ; a--){
+		for(a = B_LAST_INDEX; a > (B_LAST_INDEX-i) ; a--){
 			if(block[a] == i){				
 			continue;
 		}else{return 0;}
@@ -18,11 +19,11 @@ return i;
 
 void aes_cbc_encript(unsigned char *data, int len, unsigned char *key, unsigned char *iv,unsigned char *k1,unsigned char *k2, unsigned char *mac)
 {
-	unsigned char state[16];
+	unsigned char state[BLOCK_SIZE];
 	
-	unsigned char keyAux[16];
+	unsigned char keyAux[BLOCK_SIZE];
 	
-	unsigned char lastState[16];
+	unsigned char lastState[BLOCK_SIZE];
 		
 	int i = 0, e;
 	
@@ -31,32 +32,32 @@ void aes_cbc_encript(unsigned char *data, int len, unsigned char *key, unsigned 
 	int finalLen = 0;
 	if (len % 16 != 0) {
 	lastRound =1;
-	finalLen = len % 16;
+	finalLen = len % BLOCK_SIZE;
 	}
 	
-	int nRounds= len/16;
+	int nRounds= len/BLOCK_SIZE;
 
-	memcpy(lastState,iv, 16);
+	memcpy(lastState,iv, BLOCK_SIZE);
 
 	//Encrip the IV/nonce using a - k1;
-	memcpy(keyAux,k1, 16);
+	memcpy(keyAux,k1, BLOCK_SIZE);
 	aes_enc_dec(lastState,keyAux,0);
 	
 	//for of cbc chain
 	for(; i < nRounds;i++){
 				
-	memcpy(state, &data[i*16], 16);
-	memcpy(keyAux,key, 16);
+	memcpy(state, &data[i*BLOCK_SIZE], BLOCK_SIZE);
+	memcpy(keyAux,key, BLOCK_SIZE);
 
 	//XOR lastState + PlainText(state)
-	for (e=0;e<16;e++){
+	for (e=0;e<BLOCK_SIZE;e++){
 		state[e]= state[e] ^ lastState[e];
 		}
 	
 	//In last round compute the MAC
 	if(i == (nRounds-1) && (!lastRound)){
 	
-	memcpy(lastState, &data[i*16], 16);	
+	memcpy(lastState, &data[i*BLOCK_SIZE], BLOCK_SIZE);	
 
 /*			
 	printf("\n Last State \n");
@@ -70,27 +71,27 @@ void aes_cbc_encript(unsigned char *data, int len, unsigned char *key, unsigned 
 			break;
 			}
 		
-		memcpy(mac,state,16);
+		memcpy(mac,state,BLOCK_SIZE);
 		
 		// XOR K1 (PlainText is multiple of n blocks) 
-		for (e=0;e<16;e++){
+		for (e=0;e<BLOCK_SIZE;e++){
 			mac[e]= mac[e] ^ k1[e];
 			}
 			
 			//AES Encript mac using Key
-			memcpy(keyAux,key, 16);
+			memcpy(keyAux,key, BLOCK_SIZE);
 			aes_enc_dec(mac,keyAux,0);
 		}
 
 	//AES Encript
-	memcpy(keyAux,key,16);	
+	memcpy(keyAux,key,BLOCK_SIZE);	
 	aes_enc_dec(state,keyAux,0);
 	
 	//Save Criptograma como next "lastState"
-	memcpy(lastState,state,16);
+	memcpy(lastState,state,BLOCK_SIZE);
 	
 	//save cipher text
-	memcpy(&data[i*16],state, 16);
+	memcpy(&data[i*BLOCK_SIZE],state, BLOCK_SIZE);
 	
 	}
 	
@@ -100,28 +101,28 @@ void aes_cbc_encript(unsigned char *data, int len, unsigned char *key, unsigned 
 	if(finalLen != 0){
 		
 	//ADD Padding 
-	memcpy(state, &data[(i*16)],finalLen);
-	memset(&state[finalLen],(16-finalLen),16-finalLen);
+	memcpy(state, &data[(i*BLOCK_SIZE)],finalLen);
+	memset(&state[finalLen],(BLOCK_SIZE-finalLen),BLOCK_SIZE-finalLen);
 	}
 	
 	// XOR LastState + PlainText.
-	for (e=0;e<16;e++){
+	for (e=0;e<BLOCK_SIZE;e++){
 		state[e]= state[e] ^ lastState[e];
 		}	
 	
 	// In CMAC padding text is Xored with a diferent K.
-	memcpy(mac,state,16);
+	memcpy(mac,state,BLOCK_SIZE);
 	
 	// XOR LastState + K2(pad used).
-	for (e=0;e<16;e++){
+	for (e=0;e<BLOCK_SIZE;e++){
 			mac[e]= mac[e] ^ k2[e];
 			}
 	//AES Encript mac using Key
-	memcpy(keyAux,key, 16);
+	memcpy(keyAux,key, BLOCK_SIZE);
 	aes_enc_dec(mac,keyAux,0);
 	
 	//AES Encript	
-	memcpy(keyAux,key, 16);	
+	memcpy(keyAux,key, BLOCK_SIZE);	
 	aes_enc_dec(state,keyAux,0);
 	
 /*	printf("print State \n"); 
@@ -129,7 +130,7 @@ void aes_cbc_encript(unsigned char *data, int len, unsigned char *key, unsigned 
 		printf("%02x",state[e] & 0xff);
 		}
 */	
-	memcpy(&data[i*16],state, 16);	
+	memcpy(&data[i*BLOCK_SIZE],state, BLOCK_SIZE);	
 		
 		}
 /*		
@@ -144,36 +145,36 @@ void aes_cbc_encript(unsigned char *data, int len, unsigned char *key, unsigned 
 
 void aes_cbc_decript(unsigned char *data, int len, unsigned char *key,unsigned char *iv,unsigned char *k1)
 {
-	unsigned char state[16];
+	unsigned char state[BLOCK_SIZE];
 
-	unsigned char key1[16];
+	unsigned char key1[BLOCK_SIZE];
 	
-	unsigned char next_xor[16];
+	unsigned char next_xor[BLOCK_SIZE];
 	
-	unsigned char ivAux[16];
+	unsigned char ivAux[BLOCK_SIZE];
 	
 	int i = 0,e;
 	
 	//TODO reject msg outside
 	 
-	if (len % 16 != 0) {
+	if (len % BLOCK_SIZE != 0) {
 	printf("\n Error: menssagem mal formatada (numero de blocos não inteiro) \n");
 	}
 	
-	int nRounds= len/16;
+	int nRounds= len/BLOCK_SIZE;
 	//printf("%d \n",nRounds);
 	
-	memcpy(ivAux,iv,16);
+	memcpy(ivAux,iv,BLOCK_SIZE);
 	
 	//Encrip de nonce using a key k1
-	memcpy(key1,k1, 16);
+	memcpy(key1,k1, BLOCK_SIZE);
 	aes_enc_dec(ivAux,key1,0);
 	
 	for(; i < nRounds;i++){
 			
-	memcpy(state, &data[i*16], 16);
+	memcpy(state, &data[i*BLOCK_SIZE], BLOCK_SIZE);
 	
-	memcpy(key1,key, 16);
+	memcpy(key1,key, BLOCK_SIZE);
 	aes_enc_dec(state,key1,1);
 	
 	/*
@@ -197,20 +198,20 @@ void aes_cbc_decript(unsigned char *data, int len, unsigned char *key,unsigned c
 	if(i==0){
 	//	printf("\n primeira ronda \n");
 		//XOR ivAux + PlainText
-		for (e=0;e<16;e++){
+		for (e=0;e<BLOCK_SIZE;e++){
 			state[e]= state[e] ^ ivAux[e];
 			}			
 		}else{
 			//XOR nextXor + PlainText
-			for (e=0;e<16;e++){
+			for (e=0;e<BLOCK_SIZE;e++){
 				state[e]= state[e] ^ next_xor[e];
 				}
 			}			
 		
 //	printf("\n i-%d \n",i);
 	//guarda criptograma como proximo next_xor
-	memcpy(next_xor,&data[i*16],16);
-	memcpy(&data[i*16],state, 16);
+	memcpy(next_xor,&data[i*BLOCK_SIZE],BLOCK_SIZE);
+	memcpy(&data[i*BLOCK_SIZE],state, BLOCK_SIZE);
 	
 	}
 
