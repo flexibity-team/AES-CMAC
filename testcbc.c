@@ -33,8 +33,8 @@ int main(int argc, const char *argv[])
 		0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F};
 		
 
-	unsigned char mac[16];
-	unsigned char mac_rev[16];
+	unsigned char mac[BLOCK_SIZE];
+	unsigned char mac_rev[BLOCK_SIZE];
 	
 	int len = sizeof(data);
 	int e = 0;
@@ -46,13 +46,13 @@ int main(int argc, const char *argv[])
 		}
 */
 
-	int finallen=16;
-	if (len % 16 != 0) {
-	finallen = len % 16;
+	int finallen=BLOCK_SIZE;
+	if (len % BLOCK_SIZE != 0) {
+	finallen = len % BLOCK_SIZE;
 	}
 		
-	uint8_t newdata[len+(16-finallen)];
-	uint8_t newdata1[len+(16-finallen)];
+	uint8_t newdata[len+(BLOCK_SIZE-finallen)];
+	uint8_t newdata1[len+(BLOCK_SIZE-finallen)];
 	
 	memcpy(newdata,data,len);
 	aes_cbc_encript(newdata,len,key,iv,k1,k2,mac);
@@ -64,11 +64,12 @@ int main(int argc, const char *argv[])
 		}
 */
 	int lenNew = sizeof(newdata);
+/*
 	printf("\n Cripto \n");
 	for(e = 0; e < lenNew ; e++){
 		printf("%02x, ",newdata[e] & 0xff);
 		}
-	
+*/	
 	/* Send newdata to receiver*/
 
 	/* receiver decypher msg */	
@@ -86,8 +87,8 @@ int main(int argc, const char *argv[])
 	
 	/* Compare MAC's to validate msg*/
 	
-	if(memcmp(mac,mac_rev,16)==0){
-		printf(" MAC Equals \n");
+	if(memcmp(mac,mac_rev,BLOCK_SIZE)==0){
+		printf("\n MAC Equals msg is Valid \n");
 		}
 	
 /*	
@@ -97,13 +98,13 @@ int main(int argc, const char *argv[])
 		}
 */
 
-	printf("\n DATA \n");
+/*	printf("\n DATA \n");
 	for(e = 0; e < lenNew; e++){
 		printf("%02x, ",newdata[e] & 0xff);
 		}
-	
+*/	
 	if(memcmp(data,newdata,len)==0){
-		printf("\n Equals \n");
+		printf("\n DATA Correctly decipher \n");
 		}
 	
 	
