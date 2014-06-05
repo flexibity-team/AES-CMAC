@@ -21,6 +21,7 @@ void aes_cbc_encript(unsigned char *data, int len, unsigned char *key, unsigned 
 {
 	unsigned char state[BLOCK_SIZE];
 	
+	unsigned char stateAux[BLOCK_SIZE];
 	unsigned char keyAux[BLOCK_SIZE];
 	
 	unsigned char lastState[BLOCK_SIZE];
@@ -30,7 +31,7 @@ void aes_cbc_encript(unsigned char *data, int len, unsigned char *key, unsigned 
 	int lastRound = 0;
 	
 	int finalLen = 0;
-	if (len % 16 != 0) {
+	if (len % BLOCK_SIZE != 0) {
 	lastRound =1;
 	finalLen = len % BLOCK_SIZE;
 	}
@@ -43,10 +44,13 @@ void aes_cbc_encript(unsigned char *data, int len, unsigned char *key, unsigned 
 	memcpy(keyAux,k1, BLOCK_SIZE);
 	aes_enc_dec(lastState,keyAux,0);
 	
-	//for of cbc chain
+	//FOR of cbc chain
 	for(; i < nRounds;i++){
 				
 	memcpy(state, &data[i*BLOCK_SIZE], BLOCK_SIZE);
+	
+	memcpy(stateAux, state, BLOCK_SIZE);
+	
 	memcpy(keyAux,key, BLOCK_SIZE);
 
 	//XOR lastState + PlainText(state)
@@ -54,7 +58,7 @@ void aes_cbc_encript(unsigned char *data, int len, unsigned char *key, unsigned 
 		state[e]= state[e] ^ lastState[e];
 		}
 	
-	//In last round compute the MAC
+	// In last round compute the MAC
 	if(i == (nRounds-1) && (!lastRound)){
 	
 	memcpy(lastState, &data[i*BLOCK_SIZE], BLOCK_SIZE);	
@@ -62,11 +66,12 @@ void aes_cbc_encript(unsigned char *data, int len, unsigned char *key, unsigned 
 /*			
 	printf("\n Last State \n");
 	for(e = 0; e < 16; e++){
-		printf("%02x, ",state[e] & 0xff);	
+		printf("%02x, ",lastState[e] & 0xff);	
 		}
 	printf(" \n");
 */	
-		if(existPadding(state)!=0){
+		//In case of padding  is need will break and do LastRound code
+		if(existPadding(lastState) !=0){
 			lastRound=1;
 			break;
 			}
@@ -96,21 +101,21 @@ void aes_cbc_encript(unsigned char *data, int len, unsigned char *key, unsigned 
 	}
 	
 	if(lastRound){
-	
-	
-	if(finalLen != 0){
 		
+	if(finalLen != 0){	
 	//ADD Padding 
 	memcpy(state, &data[(i*BLOCK_SIZE)],finalLen);
 	memset(&state[finalLen],(BLOCK_SIZE-finalLen),BLOCK_SIZE-finalLen);
-	}
 	
 	// XOR LastState + PlainText.
-	for (e=0;e<BLOCK_SIZE;e++){
+	for (e=0; e<BLOCK_SIZE;e++){
 		state[e]= state[e] ^ lastState[e];
-		}	
+		}
+	}
 	
-	// In CMAC padding text is Xored with a diferent K.
+		
+	
+	// In CMAC padded block is Xored with a diferent K (K2).
 	memcpy(mac,state,BLOCK_SIZE);
 	
 	// XOR LastState + K2(pad used).
@@ -214,6 +219,4 @@ void aes_cbc_decript(unsigned char *data, int len, unsigned char *key,unsigned c
 	memcpy(&data[i*BLOCK_SIZE],state, BLOCK_SIZE);
 	
 	}
-
-
 }
