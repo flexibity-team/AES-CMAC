@@ -31,7 +31,6 @@ K2- chave usada no calculo do MAC quando é necessário acrescentar padding á m
 Run
 --------------
 ```sh
-git clone [git-repo-url] 
 make
 ./testcbc
 ```
