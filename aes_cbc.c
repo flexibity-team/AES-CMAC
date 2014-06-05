@@ -21,7 +21,6 @@ void aes_cbc_encript(unsigned char *data, int len, unsigned char *key, unsigned 
 {
 	unsigned char state[BLOCK_SIZE];
 	
-	unsigned char stateAux[BLOCK_SIZE];
 	unsigned char keyAux[BLOCK_SIZE];
 	
 	unsigned char lastState[BLOCK_SIZE];
@@ -49,7 +48,6 @@ void aes_cbc_encript(unsigned char *data, int len, unsigned char *key, unsigned 
 				
 	memcpy(state, &data[i*BLOCK_SIZE], BLOCK_SIZE);
 	
-	memcpy(stateAux, state, BLOCK_SIZE);
 	
 	memcpy(keyAux,key, BLOCK_SIZE);
 
