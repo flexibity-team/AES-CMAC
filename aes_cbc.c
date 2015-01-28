@@ -17,7 +17,7 @@ return i;
 	
 }
 
-void aes_cbc_encript(unsigned char *data, int len, unsigned char *key, unsigned char *iv,unsigned char *k1,unsigned char *k2, unsigned char *mac)
+void aes_cbc_encript(unsigned char *data, int len, unsigned char *key, unsigned char *iv, unsigned char *kiv,unsigned char *k1,unsigned char *k2, unsigned char *mac)
 {
 	unsigned char state[BLOCK_SIZE];
 	
@@ -40,7 +40,7 @@ void aes_cbc_encript(unsigned char *data, int len, unsigned char *key, unsigned 
 	memcpy(lastState,iv, BLOCK_SIZE);
 
 	//Encrip the IV/nonce using a - k1;
-	memcpy(keyAux,k1, BLOCK_SIZE);
+	memcpy(keyAux,kiv, BLOCK_SIZE);
 	aes_enc_dec(lastState,keyAux,0);
 	
 	//FOR of cbc chain
@@ -101,6 +101,7 @@ void aes_cbc_encript(unsigned char *data, int len, unsigned char *key, unsigned 
 	if(lastRound){
 		
 	if(finalLen != 0){	
+	
 	//ADD Padding 
 	memcpy(state, &data[(i*BLOCK_SIZE)],finalLen);
 	memset(&state[finalLen],(BLOCK_SIZE-finalLen),BLOCK_SIZE-finalLen);
@@ -111,13 +112,11 @@ void aes_cbc_encript(unsigned char *data, int len, unsigned char *key, unsigned 
 		}
 	}
 	
-		
-	
 	// In CMAC padded block is Xored with a diferent K (K2).
 	memcpy(mac,state,BLOCK_SIZE);
 	
 	// XOR LastState + K2(pad used).
-	for (e=0;e<BLOCK_SIZE;e++){
+	for (e=0; e<BLOCK_SIZE;e++){
 			mac[e]= mac[e] ^ k2[e];
 			}
 	//AES Encript mac using Key
@@ -146,7 +145,7 @@ void aes_cbc_encript(unsigned char *data, int len, unsigned char *key, unsigned 
 
 
 
-void aes_cbc_decript(unsigned char *data, int len, unsigned char *key,unsigned char *iv,unsigned char *k1)
+void aes_cbc_decript(unsigned char *data, int len, unsigned char *key,unsigned char *iv,unsigned char *kiv)
 {
 	unsigned char state[BLOCK_SIZE];
 
@@ -170,7 +169,7 @@ void aes_cbc_decript(unsigned char *data, int len, unsigned char *key,unsigned c
 	memcpy(ivAux,iv,BLOCK_SIZE);
 	
 	//Encrip de nonce using a key k1
-	memcpy(key1,k1, BLOCK_SIZE);
+	memcpy(key1,kiv, BLOCK_SIZE);
 	aes_enc_dec(ivAux,key1,0);
 	
 	for(; i < nRounds;i++){

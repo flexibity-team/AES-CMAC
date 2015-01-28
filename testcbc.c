@@ -11,10 +11,11 @@ int main(int argc, const char *argv[])
     0x6b, 0xc1, 0xbe, 0xe2, 0x2e, 0x40, 0x9f, 0x96,
     0xe9, 0x3d, 0x7e, 0x11, 0x73, 0x93, 0x17};
 	
-	uint8_t key[] = 
+	uint8_t key_cbc_raw[] = 
 	{ 
 	0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6,
 	0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c};
+	
 		
 	uint8_t k1[] = 
 	{ 
@@ -25,7 +26,12 @@ int main(int argc, const char *argv[])
 	{ 
 		0x13, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80,
 		0x90, 0xa0, 0xb0, 0xc0, 0xd0, 0xe0, 0xf0, 0x00};		
-		
+	
+	uint8_t kiv[] = 
+	{ 
+		0x14, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80,
+		0x90, 0xa0, 0xb0, 0xc0, 0xd0, 0xe0, 0xf0, 0x00};
+			
 	uint8_t iv[]=
 	
 	{
@@ -55,7 +61,7 @@ int main(int argc, const char *argv[])
 	uint8_t newdata1[len+(BLOCK_SIZE-finallen)];
 	
 	memcpy(newdata,data,len);
-	aes_cbc_encript(newdata,len,key,iv,k1,k2,mac);
+	aes_cbc_encript(newdata,len,key_cbc_raw,iv,kiv,k1,k2,mac);
 	
 /*	
 	printf("print MAC \n"); 
@@ -73,7 +79,7 @@ int main(int argc, const char *argv[])
 	/* Send newdata to receiver*/
 
 	/* receiver decypher msg */	
-	aes_cbc_decript(newdata,lenNew,key,iv,k1);
+	aes_cbc_decript(newdata,lenNew,key_cbc_raw,iv,kiv);
 	
 /*	printf("\n DATA \n");
 	for(e = 0; e < lenNew; e++){
@@ -83,7 +89,7 @@ int main(int argc, const char *argv[])
 	
 	/* receiver compute MAC of msg to be compare */
 	memcpy(newdata1,newdata,len);
-	aes_cbc_encript(newdata1,len,key,iv,k1,k2,mac_rev);
+	aes_cbc_encript(newdata1,len,key_cbc_raw,iv,kiv,k1,k2,mac_rev);
 	
 	/* Compare MAC's to validate msg*/
 	
