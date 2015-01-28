@@ -29,6 +29,7 @@ K1- chave usada no calculo do MAC quando não é necessário acrescentar padding
 
 K2- chave usada no calculo do MAC quando é necessário acrescentar padding á msg de modo a completar o ultimo bloco.
 
+no dummy block on padding
 
 
 Run
