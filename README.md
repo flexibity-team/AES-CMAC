@@ -4,30 +4,29 @@ AES-CMAC
 (AES128)
 ---------------
 
-Implementação do mode de cifra CBC sobre a cifra por blocos (AES-128), juntamente com a técnica para construção de MAC CMAC.
+Implementation of the CBC encryption mode on the figure by blocks (AES-128), with the technical construction MAC CMAC.
 
 Representation
 ----------
 ![Alt text](image/CMAC.png)
 
 
-Nonce/Iv pode ser aleatório ou um contador.
-A cifra do nonce é necessária quando o mesmo é um contador, ou é previsível. Caso o mesmo seja calculado de modo aleatório esta passo não é necessário.
+Nonce / IV can be random or an accountant.
+The number of nonce is required when it is an accountant, or is predictable. If the same is calculated in a random manner this step is not necessary.
 
 
 KEY
 ----
 
-Chave total é composta por K + Kiv + K1 + K2.
+Total key is composed of K + Kiv + K1 + K2.
 
+K-key used in the chain CBC
 
-K-chave usada na cadeia CBC
+Kiv- key used in the pre-figure the nonce / IV used in the jail cbc
 
-Kiv- chave usada na pré-cifra do nonce/IV usado na cadeia cbc
+K1 key used in MAC calculation when it is not necessary to add padding will msg to complete the last block.
 
-K1- chave usada no calculo do MAC quando não é necessário acrescentar padding á msg de modo a completar o ultimo bloco.
-
-K2- chave usada no calculo do MAC quando é necessário acrescentar padding á msg de modo a completar o ultimo bloco.
+K2- key used in MAC calculation when it is necessary to add padding will msg to complete the last block.
 
 no dummy block on padding
 
