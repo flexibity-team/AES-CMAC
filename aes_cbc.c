@@ -1,6 +1,8 @@
 #include "TI_aes_128.h"
 #include "aes_cbc.h"
 
+#include <string.h>
+
 /*função que verifica se bloco contem padding ou não 
  * ret 0 caso negativo ou o valor de bytes com pading*/
 int existPadding(unsigned char *block){
@@ -143,9 +145,7 @@ void aes_cbc_encript(unsigned char *data, int len, unsigned char *key, unsigned 
 	*/
 }
 
-
-
-void aes_cbc_decript(unsigned char *data, int len, unsigned char *key,unsigned char *iv,unsigned char *kiv)
+int aes_cbc_decript(unsigned char *data, int len, unsigned char *key,unsigned char *iv,unsigned char *kiv)
 {
 	unsigned char state[BLOCK_SIZE];
 
@@ -160,7 +160,7 @@ void aes_cbc_decript(unsigned char *data, int len, unsigned char *key,unsigned c
 	//TODO reject msg outside
 	 
 	if (len % BLOCK_SIZE != 0) {
-	printf("\n Error: menssagem mal formatada (numero de blocos não inteiro) \n");
+	  return -1;
 	}
 	
 	int nRounds= len/BLOCK_SIZE;
@@ -216,4 +216,6 @@ void aes_cbc_decript(unsigned char *data, int len, unsigned char *key,unsigned c
 	memcpy(&data[i*BLOCK_SIZE],state, BLOCK_SIZE);
 	
 	}
+
+	return 0;
 }
